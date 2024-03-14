@@ -1,8 +1,8 @@
 import FixedBottomNavigation from "../components/Navbar";
-import DenseAppBar from "../components/Header";
 import "../assets/App.css";
 import { getUsers } from "../services/firestore";
 import { useState, useEffect } from "react";
+import Header from "../components/Header";
 
 function App() {
   const [users, setUsers] = useState(null);
@@ -19,7 +19,7 @@ function App() {
   return (
     <div>
       <FixedBottomNavigation></FixedBottomNavigation>
-      <DenseAppBar></DenseAppBar>
+      <Header></Header>
       {users &&
         users.map((user) => (
           <div key={user.id}>
