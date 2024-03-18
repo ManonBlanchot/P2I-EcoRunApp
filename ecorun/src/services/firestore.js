@@ -1,3 +1,4 @@
+import { getAuth } from "@firebase/auth";
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 
@@ -12,7 +13,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+export const db = getFirestore(app);
 const usersCollection = collection(db, "Utilisateurs");
 
 export const getUsers = async () => {
@@ -23,3 +24,5 @@ export const getUsers = async () => {
     lastName: doc.data().Nom,
   }));
 };
+
+export const auth = getAuth();
