@@ -5,15 +5,11 @@ import SignupPage from "./pages/SignupPage";
 import EventsPage from "./pages/EventsPage";
 
 const AppRoutes = () => {
-  const isAuthenticated = false;
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
-      <Route
-        path="/events"
-        element={isAuthenticated ? <EventsPage /> : <Navigate to="/login" />}
-      />
+      <Route path="/events" element={<EventsPage />} />
       <Route path="/" element={<Navigate to="/login" />} />
     </Routes>
   );

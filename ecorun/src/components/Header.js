@@ -5,13 +5,14 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import MenuItem from "@mui/material/MenuItem";
+import { MenuItem } from "@mui/material";
 import Menu from "@mui/material/Menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Header() {
-  const [auth, setAuth] = React.useState(false);
+  const [auth, setAuth] = React.useState(true); // utilisateur connecté
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const navigate = useNavigate();
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -22,8 +23,9 @@ export default function Header() {
   };
 
   const handleLogout = () => {
-    setAuth(false); // Déconnexion de l'utilisateur
-    handleClose(); // Fermer le menu après la déconnexion
+    setAuth(false);
+    handleClose();
+    navigate("/login");
   };
 
   return (
@@ -63,18 +65,14 @@ export default function Header() {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                <Link
+                  to="/login"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <MenuItem onClick={handleLogout}>Se déconnecter</MenuItem>
+                </Link>
               </Menu>
             </div>
-          )}
-          {!auth && (
-            <Link
-              to="/login"
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              <MenuItem>Login</MenuItem>
-            </Link>
           )}
         </Toolbar>
       </AppBar>
