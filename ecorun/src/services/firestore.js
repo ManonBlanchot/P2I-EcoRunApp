@@ -10,6 +10,7 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 
+//Général
 const firebaseConfig = {
   apiKey: "AIzaSyAUXnr_IAAQXx32wwVKGA1wIelh3seg-Gw",
   authDomain: "ecorundb.firebaseapp.com",
@@ -23,6 +24,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
+//User collection
 const usersCollection = collection(db, "Utilisateurs");
 export const getUsers = async () => {
   const querySnapshot = await getDocs(usersCollection);
@@ -34,6 +36,22 @@ export const getUsers = async () => {
   }));
 };
 
+export const getUserDetails = async (uid) => {
+  const userRef = doc(db, "Utilisateurs", uid);
+  const userSnapshot = await getDoc(userRef);
+  if (userSnapshot.exists()) {
+    const userData = userSnapshot.data();
+    return {
+      name: userData.Nom,
+      pseudo: userData.Pseudo,
+    };
+  } else {
+    console.log("No user data found for UID:", uid);
+    return null;
+  }
+};
+
+//Event collection
 const eventsCollection = collection(db, "Evenements");
 export const getEvents = async () => {
   const querySnapshot = await getDocs(eventsCollection);
@@ -52,7 +70,6 @@ export const getEvents = async () => {
 export const getEventDetails = async (eventId) => {
   const eventRef = doc(db, "Evenements", eventId);
   const eventSnapshot = await getDoc(eventRef);
-
   const eventData = eventSnapshot.data();
   return {
     id: eventSnapshot.id,

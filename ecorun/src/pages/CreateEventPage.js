@@ -9,6 +9,7 @@ import { db } from "../services/firestore";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { auth } from "../services/firestore";
 import Header from "../components/Header";
+import { getUserDetails } from "../services/firestore";
 import "../assets/CreateEvent.css";
 
 const CreateEventPage = () => {
@@ -19,16 +20,22 @@ const CreateEventPage = () => {
   const [parcours, setParcours] = useState("");
   const [rythme, setRythme] = useState("");
   const navigate = useNavigate();
+  const [auteur, setAuteur] = useState(null);
 
-  const user = auth.currentUser;
-  console.log("User:", user);
+  const uid = auth.currentUser.uid;
+
+  useEffect(() => {
+    const fetchEventDetails = async () => {
+      const userData = await getUserDetails(uid);
+      setAuteur(userData);
+    };
+
+    fetchEventDetails();
+  }, []);
 
   const handleEventCreate = async (event) => {
     event.preventDefault();
     try {
-      const auteur = user.displayName;
-      console.log("Auteur:", auteur);
-
       await addDoc(collection(db, "Evenements"), {
         Date: date,
         Heure: heure,
