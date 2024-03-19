@@ -14,14 +14,28 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
-const usersCollection = collection(db, "Utilisateurs");
 
+const usersCollection = collection(db, "Utilisateurs");
 export const getUsers = async () => {
   const querySnapshot = await getDocs(usersCollection);
   return querySnapshot.docs.map((doc) => ({
     id: doc.id,
     name: doc.data().Prenom,
     lastName: doc.data().Nom,
+  }));
+};
+
+const eventsCollection = collection(db, "Evenements");
+export const getEvents = async () => {
+  const querySnapshot = await getDocs(eventsCollection);
+  return querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    date: doc.data().Date,
+    heure: doc.data().Heure,
+    distance: doc.data().Distance,
+    lieu: doc.data().Lieu,
+    parcours: doc.data().Parcours,
+    rythme: doc.data().Rythme,
   }));
 };
 

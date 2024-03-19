@@ -1,16 +1,16 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { getUsers } from "../services/firestore";
+import { getEvents } from "../services/firestore";
 import FixedBottomNavigation from "../components/Navbar";
 import Header from "../components/Header";
 
 const EventsPage = () => {
-  const [users, setUsers] = useState(null);
+  const [event, setEvent] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const userData = await getUsers();
-      setUsers(userData);
+      const eventData = await getEvents();
+      setEvent(eventData);
     };
 
     fetchData();
@@ -20,11 +20,15 @@ const EventsPage = () => {
     <div>
       <FixedBottomNavigation></FixedBottomNavigation>
       <Header></Header>
-      {users &&
-        users.map((user) => (
-          <div key={user.id}>
-            <p>{user.name}</p>
-            <p>{user.lastName}</p>
+      {event &&
+        event.map((events) => (
+          <div key={events.id}>
+            <p>{events.date}</p>
+            <p>{events.heure}</p>
+            <p>{events.distance}</p>
+            <p>{events.lieu}</p>
+            <p>{events.parcours}</p>
+            <p>{events.rythme}</p>
           </div>
         ))}
     </div>
