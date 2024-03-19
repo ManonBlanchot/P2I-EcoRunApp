@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../services/firestore";
+import { collection, addDoc } from "@firebase/firestore";
+import { db } from "../services/firestore";
 
 const SignupPage = () => {
   const [nom, setNom] = useState("");
@@ -19,22 +19,13 @@ const SignupPage = () => {
   const handleSignup = async (event) => {
     event.preventDefault();
     try {
-      // Création du compte utilisateur avec Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        mdp
-      );
-      const user = userCredential.user;
-      console.log("User created: ", user);
-
-      // Enregistrement des infos dans Firestore
-      await db.collection("Utilisateurs").doc(user.uid).set({
-        nom,
-        prenom,
-        email,
-        pseudo,
-        age,
+      await addDoc(collection(db, "Utilisateurs"), {
+        Nom: nom,
+        Prenom: prenom,
+        Email: email,
+        Pseudo: pseudo,
+        Mdp: mdp,
+        Age: age,
       });
 
       navigate("/events");
