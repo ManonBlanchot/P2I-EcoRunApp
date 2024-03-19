@@ -1,15 +1,16 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../services/firestore";
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import "../assets/LoginPage.css";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [mdp, setMdp] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (event) => {
@@ -17,27 +18,20 @@ const LoginPage = () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, mdp);
       const user = userCredential.user;
-      console.log("User logged in: ", user);
-
-      // authentification réussie => page evenement
       navigate("/events");
+      console.log("User logged in: ", user);
     } catch (error) {
+      setError("Erreur de connexion, veuillez réessayer.");
       console.error("Error signing in: ", error);
     }
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-      }}
-    >
-      <form onSubmit={handleLogin}>
+    <Box className="login-container">
+      <h1>Bienvenue sur EcoRun</h1>
+      <form onSubmit={handleLogin} className="form">
         <TextField
+          className="textfield"
           label="Email"
           type="email"
           variant="outlined"
@@ -47,6 +41,7 @@ const LoginPage = () => {
           required
         />
         <TextField
+          className="textfield"
           type="password"
           label="Mot de passe"
           variant="outlined"
@@ -55,11 +50,19 @@ const LoginPage = () => {
           onChange={(e) => setMdp(e.target.value)}
           required
         />
-        <Button type="submit" variant="contained" color="primary">
+        <Button
+          className="submit-button"
+          type="submit"
+          variant="contained"
+          color="primary"
+        >
           Se connecter
         </Button>
       </form>
-      <Link to="/signup">Créer un compte</Link>
+      {error && <p className="error-message">{error}</p>}
+      <Link className="link" to="/signup">
+        <h3>Créer un compte</h3>
+      </Link>
     </Box>
   );
 };

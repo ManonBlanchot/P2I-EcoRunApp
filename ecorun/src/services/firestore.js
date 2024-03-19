@@ -1,6 +1,14 @@
 import { getAuth } from "@firebase/auth";
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAUXnr_IAAQXx32wwVKGA1wIelh3seg-Gw",
@@ -22,6 +30,7 @@ export const getUsers = async () => {
     id: doc.id,
     name: doc.data().Prenom,
     lastName: doc.data().Nom,
+    email: doc.data().Email,
   }));
 };
 
@@ -36,7 +45,44 @@ export const getEvents = async () => {
     lieu: doc.data().Lieu,
     parcours: doc.data().Parcours,
     rythme: doc.data().Rythme,
+    auteur: doc.data().Auteur,
   }));
+};
+
+export const getEventDetails = async (eventId) => {
+  const eventRef = doc(db, "Evenements", eventId);
+  const eventSnapshot = await getDoc(eventRef);
+
+  const eventData = eventSnapshot.data();
+  return {
+    id: eventSnapshot.id,
+    date: eventData.Date,
+    heure: eventData.Heure,
+    distance: eventData.Distance,
+    lieu: eventData.Lieu,
+    parcours: eventData.Parcours,
+    rythme: eventData.Rythme,
+    auteur: eventData.Auteur,
+    participants: eventData.Participants,
+  };
+};
+
+export const addParticipantToEvent = async (eventId) => {
+  try {
+    const eventRef = doc(db, "Evenements", eventId);
+    const eventSnapshot = await getDoc(eventRef);
+    if (eventSnapshot.exists()) {
+      const eventData = eventSnapshot.data();
+      const currentParticipants = eventData.participants;
+      const newParticipants = currentParticipants + 1;
+      await updateDoc(eventRef, { participants: newParticipants });
+    } else {
+      throw new Error("Event not found");
+    }
+  } catch (error) {
+    console.error("Error adding participant to event: ", error);
+    throw error;
+  }
 };
 
 export const auth = getAuth();
