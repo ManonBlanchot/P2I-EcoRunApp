@@ -6,8 +6,7 @@ import {
   getDocs,
   doc,
   getDoc,
-  updateDoc,
-  arrayUnion,
+  setDoc,
 } from "firebase/firestore";
 
 //Général
@@ -90,9 +89,18 @@ export const addParticipantToEvent = async (eventId) => {
     const eventSnapshot = await getDoc(eventRef);
     if (eventSnapshot.exists()) {
       const eventData = eventSnapshot.data();
-      const currentParticipants = eventData.participants;
-      const newParticipants = currentParticipants + 1;
-      await updateDoc(eventRef, { participants: newParticipants });
+      const currentPaticipants = eventData.Participants;
+      const newParticipants = currentPaticipants + 1;
+      await setDoc(eventRef, {
+        date: eventData.Date,
+        heure: eventData.Heure,
+        distance: eventData.Distance,
+        lieu: eventData.Lieu,
+        parcours: eventData.Parcours,
+        rythme: eventData.Rythme,
+        auteur: eventData.Auteur,
+        participants: newParticipants,
+      });
     } else {
       throw new Error("Event not found");
     }

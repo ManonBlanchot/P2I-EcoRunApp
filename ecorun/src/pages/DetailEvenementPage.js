@@ -28,6 +28,7 @@ const DetailEvenementPage = () => {
   const handleJoinEvent = async () => {
     try {
       await addParticipantToEvent(eventId);
+      await getEventDetails(eventId);
       navigate("/events");
     } catch (error) {
       console.error("Error joining event: ", error);

@@ -45,6 +45,7 @@ const CreateEventPage = () => {
         Parcours: parcours,
         Rythme: rythme,
         Auteur: auteur,
+        Participants: 1,
       });
 
       navigate("/events");

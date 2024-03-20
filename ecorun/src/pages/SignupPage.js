@@ -10,7 +10,7 @@ import "../assets/LoginPage.css";
 import { auth } from "../services/firestore";
 import { createUserWithEmailAndPassword } from "@firebase/auth";
 
-export const signUpWithEmailAndPassword = async (
+const signUpWithEmailAndPassword = async (
   email,
   mdp,
   nom,
@@ -31,8 +31,12 @@ export const signUpWithEmailAndPassword = async (
     await createUserDocument(user.uid, nom, prenom, email, pseudo, mdp, age);
     return user;
   } catch (error) {
-    console.error("Error signing up: ", error);
-    throw error;
+    if (error.code === "auth/email-already-in-use") {
+      throw new Error("Adresse e-mail déjà utilisée");
+    } else {
+      console.error("Error signing up: ", error);
+      throw error;
+    }
   }
 };
 
@@ -55,8 +59,12 @@ const createUserDocument = async (
       Age: age,
     });
   } catch (error) {
-    console.error("Error creating user document: ", error);
-    throw error;
+    if (error.code === "auth/email-already-in-use") {
+      throw new Error("Adresse e-mail déjà utilisée");
+    } else {
+      console.error("Error signing up: ", error);
+      throw error;
+    }
   }
 };
 
@@ -67,25 +75,20 @@ const SignupPage = () => {
   const [pseudo, setPseudo] = useState("");
   const [mdp, setMdp] = useState("");
   const [age, setAge] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   const handleSignup = async (event) => {
     event.preventDefault();
     try {
-      signUpWithEmailAndPassword(
-        email,
-        mdp,
-        nom,
-        prenom,
-
-        pseudo,
-
-        age
-      );
-
+      await signUpWithEmailAndPassword(email, mdp, nom, prenom, pseudo, age);
       navigate("/events");
     } catch (error) {
-      console.error("Error creating user: ", error);
+      if (error.message === "Adresse e-mail déjà utilisée") {
+        setErrorMessage("Adresse e-mail déjà utilisée");
+      } else {
+        console.error("Error signing up: ", error);
+      }
     }
   };
 
@@ -160,6 +163,7 @@ const SignupPage = () => {
               onChange={(e) => setAge(e.target.value)}
               required
             />
+            {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
             <Button
               type="submit"
               variant="contained"
