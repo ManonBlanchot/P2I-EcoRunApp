@@ -20,14 +20,15 @@ const CreateEventPage = () => {
   const [parcours, setParcours] = useState("");
   const [rythme, setRythme] = useState("");
   const navigate = useNavigate();
-  const [auteur, setAuteur] = useState(null);
+  const [auteur, setAuteur] = useState("");
 
   const uid = auth.currentUser.uid;
 
   useEffect(() => {
     const fetchEventDetails = async () => {
       const userData = await getUserDetails(uid);
-      setAuteur(userData);
+      const userName = userData.name;
+      setAuteur(userName);
     };
 
     fetchEventDetails();

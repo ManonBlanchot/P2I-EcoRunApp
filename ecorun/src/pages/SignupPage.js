@@ -4,9 +4,61 @@ import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import { collection, addDoc } from "@firebase/firestore";
+import { collection, addDoc, doc, setDoc } from "@firebase/firestore";
 import { db } from "../services/firestore";
 import "../assets/LoginPage.css";
+import { auth } from "../services/firestore";
+import { createUserWithEmailAndPassword } from "@firebase/auth";
+
+export const signUpWithEmailAndPassword = async (
+  email,
+  mdp,
+  nom,
+  prenom,
+
+  pseudo,
+
+  age
+) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      mdp
+    );
+    const user = userCredential.user;
+
+    await createUserDocument(user.uid, nom, prenom, email, pseudo, mdp, age);
+    return user;
+  } catch (error) {
+    console.error("Error signing up: ", error);
+    throw error;
+  }
+};
+
+const createUserDocument = async (
+  uid,
+  nom,
+  prenom,
+  email,
+  pseudo,
+  mdp,
+  age
+) => {
+  try {
+    await setDoc(doc(db, "Utilisateurs", uid), {
+      Nom: nom,
+      Prenom: prenom,
+      Email: email,
+      Pseudo: pseudo,
+      Mdp: mdp,
+      Age: age,
+    });
+  } catch (error) {
+    console.error("Error creating user document: ", error);
+    throw error;
+  }
+};
 
 const SignupPage = () => {
   const [nom, setNom] = useState("");
@@ -20,14 +72,16 @@ const SignupPage = () => {
   const handleSignup = async (event) => {
     event.preventDefault();
     try {
-      await addDoc(collection(db, "Utilisateurs"), {
-        Nom: nom,
-        Prenom: prenom,
-        Email: email,
-        Pseudo: pseudo,
-        Mdp: mdp,
-        Age: age,
-      });
+      signUpWithEmailAndPassword(
+        email,
+        mdp,
+        nom,
+        prenom,
+
+        pseudo,
+
+        age
+      );
 
       navigate("/events");
     } catch (error) {
