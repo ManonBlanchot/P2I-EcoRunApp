@@ -56,13 +56,14 @@ export const getEvents = async () => {
   const querySnapshot = await getDocs(eventsCollection);
   return querySnapshot.docs.map((doc) => ({
     id: doc.id,
-    date: doc.data().Date,
-    heure: doc.data().Heure,
-    distance: doc.data().Distance,
-    lieu: doc.data().Lieu,
-    parcours: doc.data().Parcours,
-    rythme: doc.data().Rythme,
-    auteur: doc.data().Auteur,
+    date: doc.data().date,
+    heure: doc.data().heure,
+    distance: doc.data().distance,
+    lieu: doc.data().lieu,
+    parcours: doc.data().parcours,
+    rythme: doc.data().rythme,
+    auteur: doc.data().auteur,
+    participants: doc.data().participants,
   }));
 };
 
@@ -72,14 +73,14 @@ export const getEventDetails = async (eventId) => {
   const eventData = eventSnapshot.data();
   return {
     id: eventSnapshot.id,
-    date: eventData.Date,
-    heure: eventData.Heure,
-    distance: eventData.Distance,
-    lieu: eventData.Lieu,
-    parcours: eventData.Parcours,
-    rythme: eventData.Rythme,
-    auteur: eventData.Auteur,
-    participants: eventData.Participants,
+    date: eventData.date,
+    heure: eventData.heure,
+    distance: eventData.distance,
+    lieu: eventData.lieu,
+    parcours: eventData.parcours,
+    rythme: eventData.rythme,
+    auteur: eventData.auteur,
+    participants: eventData.participants,
   };
 };
 
@@ -92,6 +93,7 @@ export const addParticipantToEvent = async (eventId) => {
       const currentPaticipants = eventData.Participants;
       const newParticipants = currentPaticipants + 1;
       await setDoc(eventRef, {
+        id: eventSnapshot.id,
         date: eventData.Date,
         heure: eventData.Heure,
         distance: eventData.Distance,
