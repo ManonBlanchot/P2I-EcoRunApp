@@ -27,8 +27,8 @@ const CreateEventPage = () => {
   useEffect(() => {
     const fetchEventDetails = async () => {
       const userData = await getUserDetails(uid);
-      const userName = userData.name;
-      setAuteur(userName);
+      const userPseudo = userData.pseudo;
+      setAuteur(userPseudo);
     };
 
     fetchEventDetails();
@@ -38,14 +38,14 @@ const CreateEventPage = () => {
     event.preventDefault();
     try {
       await addDoc(collection(db, "Evenements"), {
-        Date: date,
-        Heure: heure,
-        Distance: distance,
-        Lieu: lieu,
-        Parcours: parcours,
-        Rythme: rythme,
-        Auteur: auteur,
-        Participants: 1,
+        date: date,
+        heure: heure,
+        distance: distance,
+        lieu: lieu,
+        parcours: parcours,
+        rythme: rythme,
+        auteur: auteur,
+        participants: 1,
       });
 
       navigate("/events");
