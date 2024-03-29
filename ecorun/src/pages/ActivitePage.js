@@ -80,6 +80,7 @@ function ActivitePage() {
     setCourseStarted(!courseStarted);
   };
 
+  // TODO ! Revoir le calcul
   const calculateDistance = (start, end) => {
     const [lat1, lon1] = start;
     const [lat2, lon2] = end;
@@ -121,10 +122,10 @@ const styles = {
       transition: 'background 0.3s ease',
     },
     startButton: {
-      background: '#28a745', // vert
+      background: '#28a745', 
     },
     stopButton: {
-      background: '#dc3545', // rouge
+      background: '#dc3545', 
     }
   };
 export default ActivitePage;

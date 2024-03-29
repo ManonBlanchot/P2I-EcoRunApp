@@ -90,17 +90,17 @@ export const addParticipantToEvent = async (eventId) => {
     const eventSnapshot = await getDoc(eventRef);
     if (eventSnapshot.exists()) {
       const eventData = eventSnapshot.data();
-      const currentPaticipants = eventData.Participants;
+      const currentPaticipants = eventData.participants;
       const newParticipants = currentPaticipants + 1;
       await setDoc(eventRef, {
         id: eventSnapshot.id,
-        date: eventData.Date,
-        heure: eventData.Heure,
-        distance: eventData.Distance,
-        lieu: eventData.Lieu,
-        parcours: eventData.Parcours,
-        rythme: eventData.Rythme,
-        auteur: eventData.Auteur,
+        date: eventData.date,
+        heure: eventData.heure,
+        distance: eventData.distance,
+        lieu: eventData.lieu,
+        parcours: eventData.parcours,
+        rythme: eventData.rythme,
+        auteur: eventData.auteur,
         participants: newParticipants,
       });
     } else {
@@ -111,5 +111,33 @@ export const addParticipantToEvent = async (eventId) => {
     throw error;
   }
 };
+
+export const removeParticipantFromEvent = async (eventId) => {
+    try {
+      const eventRef = doc(db, "Evenements", eventId);
+      const eventSnapshot = await getDoc(eventRef);
+      if (eventSnapshot.exists()) {
+        const eventData = eventSnapshot.data();
+        const currentPaticipants = eventData.participants;
+        const newParticipants = currentPaticipants - 1;
+        await setDoc(eventRef, {
+          id: eventSnapshot.id,
+          date: eventData.date,
+          heure: eventData.heure,
+          distance: eventData.distance,
+          lieu: eventData.lieu,
+          parcours: eventData.parcours,
+          rythme: eventData.rythme,
+          auteur: eventData.auteur,
+          participants: newParticipants,
+        });
+      } else {
+        throw new Error("Event not found");
+      }
+    } catch (error) {
+      console.error("Error adding participant to event: ", error);
+      throw error;
+    }
+  };
 
 export const auth = getAuth();
