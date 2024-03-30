@@ -141,4 +141,16 @@ export const removeParticipantFromEvent = async (eventId) => {
   }
 };
 
+// performance collection
+const perfsCollection = collection(db, "Performances");
+export const getPerfs = async () => {
+  const querySnapshot = await getDocs(perfsCollection);
+  return querySnapshot.docs.map((doc) => ({
+    id: doc.data().id,
+    distance: doc.data().distance,
+    temps: doc.data().temps,
+    utilisateurID: doc.data().utilisateurID,
+  }));
+};
+
 export const auth = getAuth();

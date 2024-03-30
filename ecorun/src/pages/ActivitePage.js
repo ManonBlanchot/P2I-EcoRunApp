@@ -90,11 +90,13 @@ function ActivitePage() {
       setStartTime(new Date().getTime());
     }
     setCourseStarted(!courseStarted);
-    addDoc(collection(db, "Performances"), {
-      distance: distance,
-      temps: formatTime(elapsedTime),
-      utilisateurID: uid,
-    });
+    if (elapsedTime !== 0) {
+      addDoc(collection(db, "Performances"), {
+        distance: distance,
+        temps: formatTime(elapsedTime),
+        utilisateurID: uid,
+      });
+    }
   };
 
   //Conversion du temps en minutes/secondes
