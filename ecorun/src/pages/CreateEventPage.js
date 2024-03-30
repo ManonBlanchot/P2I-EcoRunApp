@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { collection, addDoc } from "@firebase/firestore";
 import { db } from "../services/firestore";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -79,7 +83,7 @@ const CreateEventPage = () => {
         <div className="form">
           <form onSubmit={handleEventCreate}>
             <TextField
-              label="Date"
+              type="date"
               variant="outlined"
               margin="normal"
               value={date}
@@ -87,7 +91,7 @@ const CreateEventPage = () => {
               required
             />
             <TextField
-              label="Heure"
+              type="time"
               variant="outlined"
               margin="normal"
               value={heure}
@@ -95,6 +99,7 @@ const CreateEventPage = () => {
               required
             />
             <TextField
+              type="number"
               label="Distance"
               variant="outlined"
               margin="normal"
@@ -110,14 +115,22 @@ const CreateEventPage = () => {
               onChange={(e) => setLieu(e.target.value)}
               required
             />
-            <TextField
-              label="Parcours"
-              variant="outlined"
-              margin="normal"
-              value={parcours}
-              onChange={(e) => setParcours(e.target.value)}
-              required
-            />
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Parcours</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={parcours}
+                label="Parcours"
+                onChange={(e) => setParcours(e.target.value)}
+              >
+                <MenuItem value={"P1"}>P1</MenuItem>
+                <MenuItem value={"P2"}>P2</MenuItem>
+                <MenuItem value={"P3"}>P3</MenuItem>
+                <MenuItem value={"P4"}>P4</MenuItem>
+                <MenuItem value={"Personnalisé"}>Personnalisé</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               type="number"
               label="Rythme"

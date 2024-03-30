@@ -150,6 +150,7 @@ export const getPerfs = async () => {
     distance: doc.data().distance,
     temps: doc.data().temps,
     utilisateurID: doc.data().utilisateurID,
+    date: doc.data().date,
   }));
 };
 

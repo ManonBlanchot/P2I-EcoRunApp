@@ -11,6 +11,7 @@ const StatsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const perfData = await getPerfs();
+
       setPerfs(perfData);
     };
 
@@ -21,6 +22,8 @@ const StatsPage = () => {
     if (perfs) {
       const uid = auth.currentUser.uid;
       const userPerfs = perfs.filter((perf) => perf.utilisateurID === uid);
+      // Trier les performances de la plus ancienne à la plus récente
+      userPerfs.sort((a, b) => new Date(a.date) - new Date(b.date));
       setUserPerfs(userPerfs);
     }
   }, [perfs]);
@@ -43,6 +46,7 @@ const StatsPage = () => {
                 color: "black",
               }}
             >
+              <p>Date : {perf.date}</p>
               <p>Distance parcourue : {perf.distance}</p>
               <p>Temps écoulé : {perf.temps}</p>
             </div>

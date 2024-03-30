@@ -12,7 +12,14 @@ const EventsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const eventData = await getEvents();
-      setEvents(eventData);
+      // Filtrer les événements dont la date est postérieure ou égale à aujourd'hui
+      const filteredEvents = eventData.filter(
+        (event) => new Date(event.date) > new Date()
+      );
+      // Trier les événements filtrés par date
+      filteredEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      setEvents(filteredEvents);
     };
 
     fetchData();
@@ -47,8 +54,9 @@ const EventsPage = () => {
                 }}
               >
                 <p>Nom de l'utilisateur : {event.auteur}</p>
-                <p>Lieu de départ : {event.lieu}</p>
+                <p>Date : {event.date}</p>
                 <p>Heure : {event.heure}</p>
+                <p>Lieu de départ : {event.lieu}</p>
                 <p>Distance : {event.distance} km</p>
                 <Button variant="contained" color="primary">
                   Voir plus

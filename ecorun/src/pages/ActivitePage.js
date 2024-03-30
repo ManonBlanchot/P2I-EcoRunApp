@@ -91,10 +91,18 @@ function ActivitePage() {
     }
     setCourseStarted(!courseStarted);
     if (elapsedTime !== 0) {
+      const currentTime = new Date();
+      const day = currentTime.getDate();
+      const month = currentTime.toLocaleString("default", { month: "long" });
+      const year = currentTime.getFullYear();
+
+      // Formater la date
+      const formattedDate = `${day} ${month} ${year}`;
       addDoc(collection(db, "Performances"), {
         distance: distance,
         temps: formatTime(elapsedTime),
         utilisateurID: uid,
+        date: formattedDate,
       });
     }
   };
