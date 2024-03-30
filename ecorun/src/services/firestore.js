@@ -29,9 +29,11 @@ export const getUsers = async () => {
   const querySnapshot = await getDocs(usersCollection);
   return querySnapshot.docs.map((doc) => ({
     id: doc.id,
-    name: doc.data().Prenom,
-    lastName: doc.data().Nom,
-    email: doc.data().Email,
+    prenom: doc.data().prenom,
+    nom: doc.data().nom,
+    email: doc.data().email,
+    pseudo: doc.data().pseudo,
+    age: doc.data().age,
   }));
 };
 
@@ -41,10 +43,30 @@ export const getUserDetails = async (uid) => {
   if (userSnapshot.exists()) {
     const userData = userSnapshot.data();
     return {
-      name: userData.Nom,
-      pseudo: userData.Pseudo,
+      nom: userData.nom,
+      pseudo: userData.pseudo,
+      age: userData.age,
       id: userData.id,
     };
+  } else {
+    console.log("No user data found for UID:", uid);
+    return null;
+  }
+};
+
+export const editProfile = async (uid, pseudo, age) => {
+  const userRef = doc(db, "Utilisateurs", uid);
+  const userSnapshot = await getDoc(userRef);
+  const newPseudo = pseudo;
+  const newAge = age;
+  if (userSnapshot.exists()) {
+    await setDoc(userRef, {
+      prenom: userSnapshot.data().prenom,
+      nom: userSnapshot.data().nom,
+      email: userSnapshot.data().email,
+      pseudo: newPseudo,
+      age: newAge,
+    });
   } else {
     console.log("No user data found for UID:", uid);
     return null;

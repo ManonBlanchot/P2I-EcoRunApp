@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Button from "@mui/material/Button";
-
+import { Box } from "@mui/system";
+import { Link } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { getEventDetails } from "../services/firestore";
 import {
   addParticipantToEvent,
   removeParticipantFromEvent,
 } from "../services/firestore";
 import Header from "../components/Header";
-import { Box } from "@mui/system";
-import { Link } from "react-router-dom";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const DetailEvenementPage = () => {
   const { eventId } = useParams();
@@ -63,12 +62,14 @@ const DetailEvenementPage = () => {
             <ArrowBackIcon></ArrowBackIcon>Retour
           </Button>
         </Link>
-        <div
-          style={{
+        <Box
+          sx={{
             border: "1px solid #ccc",
             margin: "10px",
             padding: "10px",
             color: "black",
+            borderRadius: "8px",
+            boxShadow: "0px 0px 5px 0px rgba(0,0,0,0.3)",
           }}
         >
           {event && (
@@ -88,11 +89,11 @@ const DetailEvenementPage = () => {
                   ...(joined ? styles.unjoinButton : styles.joinButton),
                 }}
               >
-                {joined ? "Se désinscrire" : "Rejoindre l evenement"}
+                {joined ? "Se désinscrire" : "Rejoindre l'événement"}
               </button>
             </div>
           )}
-        </div>
+        </Box>
       </Box>
     </div>
   );
@@ -100,7 +101,6 @@ const DetailEvenementPage = () => {
 
 const styles = {
   button: {
-    left: "50%",
     border: "none",
     padding: "10px 20px",
     borderRadius: "5px",
@@ -112,9 +112,11 @@ const styles = {
   },
   joinButton: {
     background: "#28a745",
+    color: "#fff",
   },
   unjoinButton: {
     background: "#dc3545",
+    color: "#fff",
   },
 };
 

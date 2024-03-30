@@ -9,6 +9,7 @@ import DetailEvenementPage from "./pages/DetailEvenementPage";
 import AmisPage from "./pages/AmisPage";
 import StatsPage from "./pages/StatsPages";
 import ActivitePage from "./pages/ActivitePage";
+import EditProfilPage from "./pages/EditProfilPage";
 
 const AppRoutes = () => {
   return (
@@ -17,6 +18,7 @@ const AppRoutes = () => {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/events" element={<EventsPage />} />
       <Route path="/profil" element={<ProfilPage />} />
+      <Route path="/editProfil" element={<EditProfilPage />} />
       <Route path="/amis" element={<AmisPage />} />
       <Route path="/stats" element={<StatsPage />} />
       <Route path="/activite" element={<ActivitePage />} />

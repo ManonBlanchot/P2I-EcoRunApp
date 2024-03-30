@@ -36,7 +36,7 @@ const EventsPage = () => {
           </Button>
         </Link>
       </Box>
-      <div style={{ textAlign: "center", marginBottom: "60px" }}>
+      <Box sx={{ textAlign: "center", marginBottom: "60px" }}>
         <h2>Rejoindre un événement</h2>
         {events &&
           events.map((event) => (
@@ -45,12 +45,15 @@ const EventsPage = () => {
               to={`/detail-event/${event.id}`}
               style={{ textDecoration: "none" }}
             >
-              <div
-                style={{
+              <Box
+                key={event.id}
+                sx={{
                   border: "1px solid #ccc",
                   margin: "10px",
                   padding: "10px",
                   color: "black",
+                  borderRadius: "8px",
+                  boxShadow: "0px 0px 5px 0px rgba(0,0,0,0.3)",
                 }}
               >
                 <p>Nom de l'utilisateur : {event.auteur}</p>
@@ -61,10 +64,10 @@ const EventsPage = () => {
                 <Button variant="contained" color="primary">
                   Voir plus
                 </Button>
-              </div>
+              </Box>
             </Link>
           ))}
-      </div>
+      </Box>
       <FixedBottomNavigation />
     </div>
   );

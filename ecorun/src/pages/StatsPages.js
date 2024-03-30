@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import FixedBottomNavigation from "../components/Navbar";
 import { getPerfs } from "../services/firestore";
 import { auth } from "../services/firestore";
+import Box from "@mui/material/Box";
 
 const StatsPage = () => {
   const [perfs, setPerfs] = useState(null);
@@ -11,7 +12,6 @@ const StatsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const perfData = await getPerfs();
-
       setPerfs(perfData);
     };
 
@@ -31,27 +31,29 @@ const StatsPage = () => {
   return (
     <div>
       <Header />
-      <div
-        style={{ textAlign: "center", marginTop: "70px", marginBottom: "60px" }}
+      <Box
+        sx={{ textAlign: "center", marginTop: "70px", marginBottom: "60px" }}
       >
         <h2>Vos performances</h2>
         {userPerfs &&
           userPerfs.map((perf) => (
-            <div
+            <Box
               key={perf.id}
-              style={{
+              sx={{
                 border: "1px solid #ccc",
                 margin: "10px",
                 padding: "10px",
                 color: "black",
+                borderRadius: "8px",
+                boxShadow: "0px 0px 5px 0px rgba(0,0,0,0.3)",
               }}
             >
               <p>Date : {perf.date}</p>
               <p>Distance parcourue : {perf.distance}</p>
               <p>Temps écoulé : {perf.temps}</p>
-            </div>
+            </Box>
           ))}
-      </div>
+      </Box>
       <FixedBottomNavigation />
     </div>
   );

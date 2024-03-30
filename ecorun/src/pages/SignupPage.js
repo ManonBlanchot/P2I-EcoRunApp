@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import { collection, addDoc, doc, setDoc } from "@firebase/firestore";
+import { doc, setDoc } from "@firebase/firestore";
 import { db } from "../services/firestore";
 import "../assets/LoginPage.css";
 import { auth } from "../services/firestore";
@@ -51,12 +51,12 @@ const createUserDocument = async (
 ) => {
   try {
     await setDoc(doc(db, "Utilisateurs", uid), {
-      Nom: nom,
-      Prenom: prenom,
-      Email: email,
-      Pseudo: pseudo,
-      Mdp: mdp,
-      Age: age,
+      nom: nom,
+      prenom: prenom,
+      email: email,
+      pseudo: pseudo,
+      mdp: mdp,
+      age: age,
     });
   } catch (error) {
     if (error.code === "auth/email-already-in-use") {
