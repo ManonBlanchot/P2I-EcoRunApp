@@ -24,6 +24,7 @@ const StatsPage = () => {
       const userPerfs = perfs.filter((perf) => perf.utilisateurID === uid);
       // Trier les performances de la plus ancienne à la plus récente
       userPerfs.sort((a, b) => new Date(a.date) - new Date(b.date));
+      userPerfs.reverse();
       setUserPerfs(userPerfs);
     }
   }, [perfs]);

@@ -11,7 +11,10 @@ import { auth } from "../services/firestore";
 
 function ActivitePage() {
   const [userLocation, setUserLocation] = useState(null);
-  const [initialPosition, setInitialPosition] = useState(null);
+  const [latActuelle, setLatActuelle] = useState(0);
+  const [lonActuelle, setLonActuelle] = useState(0);
+  const [previousLat, setPreviousLat] = useState(0);
+  const [previousLon, setPreviousLon] = useState(0);
   const [distance, setDistance] = useState(0);
   const [map, setMap] = useState(null);
   const [marker, setMarker] = useState(null);
@@ -21,25 +24,48 @@ function ActivitePage() {
 
   const uid = auth.currentUser.uid;
 
+  //Récupérer la position
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setUserLocation([latitude, longitude]);
-          setInitialPosition([latitude, longitude]);
-        },
-        (error) => {
-          console.error("Erreur de géolocalisation : ", error);
-        }
-      );
-    } else {
-      console.error(
-        "La géolocalisation n'est pas supportée par ce navigateur."
-      );
-    }
+    const interval = setInterval(() => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            const latUser = position.coords.latitude.toFixed(2);
+            const lonUser = position.coords.longitude.toFixed(2);
+            console.log("Result userlocation lat : ", latUser);
+            console.log("Result userlocation lat : ", lonUser);
+            // Si premier chargement => mettre la position initiale
+            if (previousLat === 0 && previousLon === 0) {
+              setPreviousLat(latUser);
+              setPreviousLon(lonUser);
+            } else {
+              // Sinon, mettre la position n-1
+              setPreviousLat(latActuelle);
+              setPreviousLon(lonActuelle);
+            }
+            setUserLocation([latitude, longitude]); // Mettre à jour la position
+            setLatActuelle(latUser);
+            setLonActuelle(lonUser);
+
+            console.log("userlocation lat : ", latActuelle);
+            console.log("previous location : ", previousLat);
+          },
+          (error) => {
+            console.error("Erreur de géolocalisation : ", error);
+          }
+        );
+      } else {
+        console.error(
+          "La géolocalisation n'est pas supportée par ce navigateur."
+        );
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
+  //Création et initialisation de la map
   useEffect(() => {
     const mapInstance = L.map("map").setView([51.505, -0.09], 13);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -53,6 +79,7 @@ function ActivitePage() {
     };
   }, []);
 
+  //Localisation de l'utilisateur sur la carte
   useEffect(() => {
     if (map && userLocation) {
       if (!marker) {
@@ -65,16 +92,7 @@ function ActivitePage() {
     }
   }, [userLocation, map, marker]);
 
-  useEffect(() => {
-    if (userLocation && initialPosition && courseStarted) {
-      const intervalId = setInterval(() => {
-        const newDistance = calculateDistance(initialPosition, userLocation);
-        setDistance(newDistance);
-      }, 10000); // = 10 secondes
-      return () => clearInterval(intervalId);
-    }
-  }, [initialPosition, userLocation, courseStarted]);
-
+  //Chronomètre
   useEffect(() => {
     if (courseStarted) {
       const intervalId = setInterval(() => {
@@ -85,26 +103,66 @@ function ActivitePage() {
     }
   }, [courseStarted, startTime]);
 
+  //Distance parcourue
+  useEffect(() => {
+    let intervalId;
+    if (courseStarted && previousLat !== 0 && previousLon !== 0) {
+      intervalId = setInterval(() => {
+        const newDistance =
+          distance +
+          calculateDistance(previousLat, previousLon, latActuelle, lonActuelle);
+        console.log("new distance : ", newDistance);
+        setDistance(newDistance);
+      }, 5000); // Mettre à jour toutes les 5 secondes
+    } else {
+      clearInterval(intervalId);
+    }
+
+    return () => clearInterval(intervalId);
+  }, [
+    courseStarted,
+    latActuelle,
+    lonActuelle,
+    previousLat,
+    previousLon,
+    distance,
+  ]);
+
   const handleClick = () => {
     if (!courseStarted) {
-      setStartTime(new Date().getTime());
-    }
-    setCourseStarted(!courseStarted);
-    if (elapsedTime !== 0) {
-      const currentTime = new Date();
-      const day = currentTime.getDate();
-      const month = currentTime.toLocaleString("default", { month: "long" });
-      const year = currentTime.getFullYear();
+      setStartTime(new Date().getTime()); // Enregistrer le temps de départ
+      setUserLocation(null); // Réinitialiser la position utilisateur
+      // Réinitialiser les positions
+      setPreviousLat(0);
+      setPreviousLon(0);
+      setLatActuelle(0);
+      setLonActuelle(0);
+      setDistance(0); // Réinitialiser la distance
+    } else {
+      const currentTime = new Date().getTime();
+      const elapsedTime = currentTime - startTime;
+      setElapsedTime(elapsedTime); // Mettre à jour le temps écoulé
 
-      // Formater la date
-      const formattedDate = `${day} ${month} ${year}`;
-      addDoc(collection(db, "Performances"), {
-        distance: distance,
-        temps: formatTime(elapsedTime),
-        utilisateurID: uid,
-        date: formattedDate,
-      });
+      // Si la course est arrêtée et qu'un temps écoulé est enregistré
+      if (elapsedTime !== 0) {
+        const currentTime = new Date();
+        const day = currentTime.getDate();
+        const month = currentTime.toLocaleString("default", { month: "long" });
+        const year = currentTime.getFullYear();
+
+        // Formater la date
+        const formattedDate = `${day} ${month} ${year}`;
+
+        // Enregistrer les informations finales dans la base de données
+        addDoc(collection(db, "Performances"), {
+          distance: distance,
+          temps: formatTime(elapsedTime),
+          utilisateurID: uid,
+          date: formattedDate,
+        });
+      }
     }
+    setCourseStarted(!courseStarted); // Inverser l'état de courseStarted
   };
 
   //Conversion du temps en minutes/secondes
@@ -119,7 +177,7 @@ function ActivitePage() {
     <div>
       <Header />
       <p style={{ marginTop: "70px" }}>
-        <h3>Distance parcourue : {distance.toFixed(2)} km</h3>
+        <h3>Distance parcourue : {distance} km</h3>
         {courseStarted && <h3>Temps écoulé : {formatTime(elapsedTime)}</h3>}
       </p>
       <div
@@ -169,30 +227,18 @@ const styles = {
 };
 
 // fonction qui calcule la distance à partir de deux coordonnées GPS
-function calculateDistance(point1, point2) {
-  const [lat1, lon1] = point1;
-  const [lat2, lon2] = point2;
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  // Calcul de la différence de latitude et de longitude en radians
+  const deltaLat = ((lat2 - lat1) * Math.PI) / 180;
+  const deltaLon = ((lon2 - lon1) * Math.PI) / 180;
 
-  //Conversion des latitudes en radian
-  const phi1 = (lat1 * Math.PI) / 180;
-  const phi2 = (lat2 * Math.PI) / 180;
+  // Calcul de la distance euclidienne en mètres
+  const earthRadius = 6371e3; // rayon moyen de la Terre en mètres
+  const x = deltaLon * Math.cos(((lat1 + lat2) * Math.PI) / 360);
+  const y = deltaLat;
+  const distance = Math.sqrt(x * x + y * y) * earthRadius;
 
-  //Différence de latitude/longitude + conversion en radian
-  const deltaPhi = ((lat2 - lat1) * Math.PI) / 180;
-  const deltaLambda = ((lon2 - lon1) * Math.PI) / 180;
-
-  //Calcul de la distance géodésique
-  //Permet d'avoir la distance réelle en prenant en compte la courbure de la terre
-  const a =
-    Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
-    Math.cos(phi1) *
-      Math.cos(phi2) *
-      Math.sin(deltaLambda / 2) *
-      Math.sin(deltaLambda / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const R = 6371e3; // rayon moyen de la terre, utilisée comme référence pour la conversion en mètres
-  const distance = R * c; // conversion en mètres
-  return distance / 1000; // conversion en km
+  return distance;
 }
 
 export default ActivitePage;
