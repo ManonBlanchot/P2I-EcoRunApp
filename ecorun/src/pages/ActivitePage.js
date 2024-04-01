@@ -47,9 +47,6 @@ function ActivitePage() {
             setUserLocation([latitude, longitude]); // Mettre à jour la position
             setLatActuelle(latUser);
             setLonActuelle(lonUser);
-
-            console.log("userlocation lat : ", latActuelle);
-            console.log("previous location : ", previousLat);
           },
           (error) => {
             console.error("Erreur de géolocalisation : ", error);
@@ -64,6 +61,13 @@ function ActivitePage() {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    console.log("latActuelle après mise à jour : ", latActuelle);
+  }, [latActuelle]);
+  useEffect(() => {
+    console.log("previouslon après mise à jour : ", previousLon);
+  }, [previousLon]);
 
   //Création et initialisation de la map
   useEffect(() => {
@@ -111,6 +115,10 @@ function ActivitePage() {
         const newDistance =
           distance +
           calculateDistance(previousLat, previousLon, latActuelle, lonActuelle);
+        console.log(
+          "calcul : ",
+          calculateDistance(previousLat, previousLon, latActuelle, lonActuelle)
+        );
         console.log("new distance : ", newDistance);
         setDistance(newDistance);
       }, 5000); // Mettre à jour toutes les 5 secondes
@@ -226,17 +234,21 @@ const styles = {
   },
 };
 
-// fonction qui calcule la distance à partir de deux coordonnées GPS
 function calculateDistance(lat1, lon1, lat2, lon2) {
   // Calcul de la différence de latitude et de longitude en radians
   const deltaLat = ((lat2 - lat1) * Math.PI) / 180;
   const deltaLon = ((lon2 - lon1) * Math.PI) / 180;
 
   // Calcul de la distance euclidienne en mètres
-  const earthRadius = 6371e3; // rayon moyen de la Terre en mètres
-  const x = deltaLon * Math.cos(((lat1 + lat2) * Math.PI) / 360);
+  const Rterre = 6371e3; // rayon moyen de la Terre en mètres
+  const lat1Rad = (lat1 * Math.PI) / 180;
+  const lat2Rad = (lat2 * Math.PI) / 180;
+  const lon1Rad = (lon1 * Math.PI) / 180;
+  const lon2Rad = (lon2 * Math.PI) / 180;
+
+  const x = deltaLon * Math.cos((lat1Rad + lat2Rad) / 2);
   const y = deltaLat;
-  const distance = Math.sqrt(x * x + y * y) * earthRadius;
+  const distance = Math.sqrt(x * x + y * y) * Rterre;
 
   return distance;
 }
