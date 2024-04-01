@@ -31,10 +31,8 @@ function ActivitePage() {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const { latitude, longitude } = position.coords;
-            const latUser = position.coords.latitude.toFixed(2);
-            const lonUser = position.coords.longitude.toFixed(2);
-            console.log("Result userlocation lat : ", latUser);
-            console.log("Result userlocation lat : ", lonUser);
+            const latUser = position.coords.latitude;
+            const lonUser = position.coords.longitude;
             // Si premier chargement => mettre la position initiale
             if (previousLat === 0 && previousLon === 0) {
               setPreviousLat(latUser);
@@ -61,13 +59,6 @@ function ActivitePage() {
 
     return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    console.log("latActuelle après mise à jour : ", latActuelle);
-  }, [latActuelle]);
-  useEffect(() => {
-    console.log("previouslon après mise à jour : ", previousLon);
-  }, [previousLon]);
 
   //Création et initialisation de la map
   useEffect(() => {
@@ -115,11 +106,7 @@ function ActivitePage() {
         const newDistance =
           distance +
           calculateDistance(previousLat, previousLon, latActuelle, lonActuelle);
-        console.log(
-          "calcul : ",
-          calculateDistance(previousLat, previousLon, latActuelle, lonActuelle)
-        );
-        console.log("new distance : ", newDistance);
+
         setDistance(newDistance);
       }, 5000); // Mettre à jour toutes les 5 secondes
     } else {
